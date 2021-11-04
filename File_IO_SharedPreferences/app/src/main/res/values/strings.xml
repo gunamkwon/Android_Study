@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">File_InOut</string>
+    <string name="exist_file">파일이 존재합니다.</string>
+</resources>
