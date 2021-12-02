@@ -6,8 +6,10 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.marginRight
 import com.example.lotto.databinding.ActivityMainBinding
 import kotlin.random.Random
@@ -15,16 +17,21 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding : ActivityMainBinding
+    private val lottoNum = mutableSetOf<Int>()
+    private val randomNum = mutableSetOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val lottoNum = mutableSetOf<Int>()
         initNumberPicker()
+        initButtonEvent()
+
+    }
 
 
+    private fun initButtonEvent() {
         // 버튼 이벤트 처리
         binding.btnAddNumber.setOnClickListener{
             if(lottoNum.size < 6) {
@@ -32,12 +39,35 @@ class MainActivity : AppCompatActivity() {
                     // UI 처리
                     makeBalls(lottoNum.last())
                 }
+            } else {
+                Toast.makeText(this, "번호를 더 이상 추가할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
+        binding.btnRandom.setOnClickListener {
+            lottoNum.removeAll(randomNum)
 
-
-
+            if(randomNum.size !=0){
+                for(i in 0 until randomNum.size){
+                    val idx = lottoNum.size
+                    binding.linearlayoutBalls.removeView(binding.linearlayoutBalls[idx])
+                }
             }
 
+            randomNum.clear()
+
+
+            while(randomNum.size < 6 - lottoNum.size) {
+                val num = (1..45).random()
+                if(!lottoNum.contains(num)) {
+                    randomNum.add(num)
+                }
+            }
+
+            for(num in randomNum){
+                lottoNum.add(num)
+                makeBalls(num)
+            }
         }
 
         binding.btnReset.setOnClickListener{
@@ -45,18 +75,6 @@ class MainActivity : AppCompatActivity() {
 
             // UI 처리
             binding.linearlayoutBalls.removeAllViews()
-        }
-
-        binding.btnRandom.setOnClickListener {
-            while(lottoNum.size < 6){
-                if(lottoNum.add((1..45).random())) {
-                    // UI 처리
-                    makeBalls(lottoNum.last())
-                }
-
-
-            }
-
         }
     }
 
@@ -80,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         linearLayoutParams.rightMargin = 24
         textview.layoutParams = linearLayoutParams
 
-        //textview.background = resources.getDrawable(R.drawable.lotto_balls, null)
         textview.background = ContextCompat.getDrawable(this, R.drawable.lotto_balls)
 
         binding.linearlayoutBalls.addView(textview)
