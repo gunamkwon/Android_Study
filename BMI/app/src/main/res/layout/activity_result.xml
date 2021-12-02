@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".ResultActivity">
+
+    <TextView
+        android:id="@+id/text_bmi_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BMI 수치: "
+        android:textAlignment="center"
+        tools:layout_editor_absoluteX="255dp"
+        tools:layout_editor_absoluteY="279dp"
+        android:textSize= "24dp"/>
+
+    <TextView
+        android:id="@+id/text_bmi_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="결과: "
+        android:textSize= "24dp"
+        android:textAlignment="center"
+        tools:layout_editor_absoluteX="159dp"
+        tools:layout_editor_absoluteY="494dp" />
+</androidx.appcompat.widget.LinearLayoutCompat>
