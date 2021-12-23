@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Diary</string>
+    <string name="preference_key">Key</string>
+    <string name="save_password">Password</string>
+
+    <string name="dialog_title">오류</string>
+    <string name="dialog_message">비밀번호가 틀렸습니다</string>
+</resources>
