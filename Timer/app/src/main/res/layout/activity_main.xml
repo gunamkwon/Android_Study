@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red"
     tools:context=".MainActivity">
 
     <TextView
@@ -12,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00"
+        android:textColor="@color/white"
         android:textSize="64sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/text_dot"
@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="'"
+        android:textColor="@color/white"
         android:textSize="64sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/text_minute"
@@ -37,19 +38,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00"
+        android:textColor="@color/white"
         android:textSize="48sp"
-        app:layout_constraintBottom_toBottomOf="@id/text_dot"
-        app:layout_constraintStart_toEndOf="@id/text_dot"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_minute"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/text_dot" />
+        app:layout_constraintStart_toEndOf="@id/text_dot" />
 
-    <androidx.appcompat.widget.AppCompatSeekBar
+    <SeekBar
         android:id="@+id/seekbar_timer"
         android:layout_width="0dp"
-        app:layout_constraintTop_toBottomOf="@id/text_minute"
         android:layout_height="wrap_content"
+        android:thumb="@drawable/ic_thumb"
+        android:layout_marginHorizontal="20dp"
+        android:progressDrawable="@color/transparent"
+        app:tickMark="@drawable/drawable_tick_mark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_minute" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
