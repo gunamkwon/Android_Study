@@ -2,6 +2,8 @@ package com.example.recorder
 
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +15,14 @@ import androidx.core.content.ContextCompat
 import java.security.Permissions
 import java.util.jar.Manifest
 
+// Media Recorder
+//  https://developer.android.com/reference/android/media/MediaRecorder?hl=ko
+
+// Supported Media formats
+// https://developer.android.com/guide/topics/media/media-formats
+
+// Media Player
+// https://developer.android.com/reference/android/media/MediaPlayer
 class MainActivity : AppCompatActivity() {
 
     private val recordButton: RecordButton by lazy {
@@ -20,16 +30,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val PERMISSION_REQUEST = 100
-    private var state = State.BEFORE_RECORDING
 
+
+    //
+    private val recordingFilePath: String by lazy {
+        "${externalCacheDir?.absolutePath}/recording.3gp"
+    }
+    // 사용하지 않을 때는 release()시키고 null 두어야 메모리관리에 좋다
+    private var recorder: MediaRecorder? = null
+    private var player: MediaPlayer? = null
+
+
+    private var state = State.BEFORE_RECORDING
+        set(value) {
+            field = value
+            recordButton.updateIconWithState(value)
+        }
+
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initViews()
 
-
-        onCheckPermission()
+        recordButton.setOnClickListener {
+            onCheckPermission()
+            when(state) {
+                State.BEFORE_RECORDING -> {
+                    startRecording()
+                }
+                State.ON_RECORDING -> {
+                    stopRecording()
+                }
+                State.AFTER_RECORDING -> {
+                    startPlaying()
+                }
+                State.ON_PLAYING -> {
+                    stopPlaying()
+                }
+            }
+        }
     }
 
 
@@ -48,6 +89,15 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        when(requestCode) {
+            PERMISSION_REQUEST -> {
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 권한이 있으니 실행
+                } else {
+                    finish()
+                }
+            }
+        }
     }
 
     fun requestRecordingPermission() {
@@ -62,5 +112,47 @@ class MainActivity : AppCompatActivity() {
 
     fun initViews() {
         recordButton.updateIconWithState(state)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun startRecording() {
+        recorder = MediaRecorder(this).apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+            // 따로 저장하지 않기 때문에 캐쉬에 저장할 것
+            // 내부에 저장 or 외부에 저장 => 녹음의 경우, 내부는 용량이 작을 수 있다.
+            // 그래서 이 프로젝트의 경우, 외부 캐쉬에 저장해야함
+            setOutputFile(recordingFilePath)
+            prepare()
+        }
+        recorder?.start()
+        state = State.ON_RECORDING
+    }
+
+    private fun stopRecording() {
+        recorder?.run {
+            stop()
+            release()
+        }
+        recorder = null
+        state = State.AFTER_RECORDING
+    }
+
+    private fun startPlaying() {
+        player = MediaPlayer().apply {
+            setDataSource(recordingFilePath)
+            prepare()
+            // Streaming의 경우 async를 사용하기도 한다.
+        }
+        player?.start()
+        state = State.ON_PLAYING
+    }
+
+    private fun stopPlaying() {
+        player?.release()
+        player = null
+        state = State.AFTER_RECORDING
     }
 }
