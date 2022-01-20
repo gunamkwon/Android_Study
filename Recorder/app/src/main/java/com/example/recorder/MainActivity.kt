@@ -7,6 +7,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -28,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     private val recordButton: RecordButton by lazy {
         findViewById(R.id.btn_record)
     }
+    private val resetButton: Button by lazy{
+        findViewById(R.id.btn_reset)
+    }
 
     private val PERMISSION_REQUEST = 100
 
@@ -44,8 +48,11 @@ class MainActivity : AppCompatActivity() {
     private var state = State.BEFORE_RECORDING
         set(value) {
             field = value
+            resetButton.isEnabled = (value == State.AFTER_RECORDING) ||
+                    (value == State.ON_PLAYING)
             recordButton.updateIconWithState(value)
         }
+
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +60,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initViews()
+        initButtonEvent()
+        initVariables()
+    }
+
+    private fun initVariables() {
+        state = State.BEFORE_RECORDING
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun initButtonEvent() {
 
         recordButton.setOnClickListener {
             onCheckPermission()
@@ -70,6 +87,11 @@ class MainActivity : AppCompatActivity() {
                     stopPlaying()
                 }
             }
+        }
+
+        resetButton.setOnClickListener {
+            stopPlaying()
+            state = State.BEFORE_RECORDING
         }
     }
 
