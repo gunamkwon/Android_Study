@@ -24,7 +24,19 @@ import java.util.jar.Manifest
 
 // Media Player
 // https://developer.android.com/reference/android/media/MediaPlayer
+
+// Custom Drawing
+// https://developer.android.com/training/custom-views/custom-drawing?hl=ko
+
 class MainActivity : AppCompatActivity() {
+
+    private val soundVisualizerView: SoundVisualizeVIew by lazy {
+        findViewById(R.id.soundVisualizeView)
+    }
+
+    private val recordTimeTextView: CountUpView by lazy {
+        findViewById(R.id.recordTimeTextView)
+    }
 
     private val recordButton: RecordButton by lazy {
         findViewById(R.id.btn_record)
@@ -69,8 +81,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    fun initButtonEvent() {
-
+    private fun initButtonEvent() {
+        soundVisualizerView.onRequestCurrentAmplitude = {
+            recorder?.maxAmplitude ?: 0
+        }
         recordButton.setOnClickListener {
             onCheckPermission()
             when(state) {
@@ -138,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun startRecording() {
-        recorder = MediaRecorder(this).apply {
+        recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -150,6 +164,8 @@ class MainActivity : AppCompatActivity() {
             prepare()
         }
         recorder?.start()
+        soundVisualizerView.startVisualizing(false)
+        recordTimeTextView.startCountUp()
         state = State.ON_RECORDING
     }
 
@@ -159,6 +175,8 @@ class MainActivity : AppCompatActivity() {
             release()
         }
         recorder = null
+        soundVisualizerView.stopVisualizing()
+        recordTimeTextView.stopCountUp()
         state = State.AFTER_RECORDING
     }
 
@@ -169,12 +187,16 @@ class MainActivity : AppCompatActivity() {
             // Streaming의 경우 async를 사용하기도 한다.
         }
         player?.start()
+        soundVisualizerView.startVisualizing(true)
+        recordTimeTextView.startCountUp()
         state = State.ON_PLAYING
     }
 
     private fun stopPlaying() {
         player?.release()
         player = null
+        soundVisualizerView.stopVisualizing()
+        recordTimeTextView.stopCountUp()
         state = State.AFTER_RECORDING
     }
 }
