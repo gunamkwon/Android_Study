@@ -105,6 +105,8 @@ class MainActivity : AppCompatActivity() {
 
         resetButton.setOnClickListener {
             stopPlaying()
+            soundVisualizerView.clearVisualization()
+            recordTimeTextView.clearCountTime()
             state = State.BEFORE_RECORDING
         }
     }
@@ -185,6 +187,10 @@ class MainActivity : AppCompatActivity() {
             setDataSource(recordingFilePath)
             prepare()
             // Streaming의 경우 async를 사용하기도 한다.
+        }
+        player?.setOnCompletionListener {
+            stopPlaying()
+            state = State.AFTER_RECORDING
         }
         player?.start()
         soundVisualizerView.startVisualizing(true)

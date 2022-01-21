@@ -98,7 +98,13 @@ class SoundVisualizeVIew(
     }
 
     fun stopVisualizing() {
+        rePlayingPosition = 0
         handler?.removeCallbacks(visualizeRepeatAction)
+    }
+
+    fun clearVisualization() {
+        drawingAmplitude = emptyList()
+        invalidate()
     }
 
     companion object {
