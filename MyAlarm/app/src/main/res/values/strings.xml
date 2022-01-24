@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyAlarm</string>
+    <string name="alarm_init">시간 재설정</string>
+    <string name="alarm_off">알람 끄기</string>
 </resources>
